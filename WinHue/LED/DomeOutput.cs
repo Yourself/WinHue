@@ -74,7 +74,6 @@ namespace WinHue.LED
         private readonly OpcDriver mDriver = new();
         private readonly IPixelBatcher mBatcher;
 
-        private bool mIsActive;
         private bool mDisposed;
     }
 }

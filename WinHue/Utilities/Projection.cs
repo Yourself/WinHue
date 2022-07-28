@@ -3,7 +3,7 @@ using System.Numerics;
 
 namespace WinHue.Utilities
 {
-    internal static class Projection
+    public static class Projection
     {
         public static (double Radius, double Azimuth) GetAzimuthalEquidistant(Vector3 v)
         {

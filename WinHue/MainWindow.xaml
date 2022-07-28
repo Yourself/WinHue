@@ -11,15 +11,5 @@
     <local:Main />
   </Window.DataContext>
   <Grid>
-    <TabControl ItemsSource="{Binding Pages}">
-      <TabControl.ItemTemplate>
-        <DataTemplate DataType="pages:IPage">
-          <Label Content="{Binding Title}" />
-        </DataTemplate>
-      </TabControl.ItemTemplate>
-      <TabControl.Resources>
-        <DataTemplate></DataTemplate>
-      </TabControl.Resources>
-    </TabControl>
   </Grid>
 </Window>
