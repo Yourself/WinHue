@@ -5,7 +5,7 @@ using System.Numerics;
 
 namespace WinHue.LED
 {
-    internal sealed partial class DomeOutput
+    public sealed partial class DomeOutput
     {
         // The dome geometry can be computed by tesselating the faces of an icosahedron.
         // The 5-way symmetry of the icosahedron can be exploited here. It can be split into 5 strips of 4 triangles:
@@ -90,7 +90,7 @@ namespace WinHue.LED
                 int col = vert - row * (row + 1) / 2;
                 float a = 1f - 0.25f * row;
                 float b = 0.25f * col;
-                weights = new[] { a, b, 1f - a - b, 0, 0 };
+                weights = new[] { a, 1f - a - b, b, 0, 0 };
             }
             else if (vert == 15)
             {
@@ -115,7 +115,7 @@ namespace WinHue.LED
                 (12, 18), (18, 17), (17, 16), (16, 15),           // Path 4 (Orange)
                 (12, 13), (13, 14), (14,  9), ( 9, 13), (13, 19), // Path 5 (Violet)
                 (12,  7), ( 7,  8), ( 8,  4), ( 4,  5), ( 5,  8), // Path 6 (Yellow)
-                (12, 11), (11,  7), ( 7,  4), ( 4,  2), ( 4,  1), // Path 7 (Blue)
+                (12, 11), (11,  7), ( 7,  4), ( 4,  2), ( 2,  1), // Path 7 (Blue)
                 ( 8, 13), (13, 18), (18, 19), (19, 14)            // Path 8 (Teal)
             };
             struts = new (int, int)[leafEdges.Length * LeafCount];
@@ -137,11 +137,11 @@ namespace WinHue.LED
                 [15] = ~4,
                 [19] = 4
             };
-            List<int> apexVertices = new();
-            var leafBinsQuery = Enumerable.Range(0, periodicVerts.Max((pair) => pair.Value) + 1).Select(_ => new List<int>());
-            List<int>[][] leafPeriodicities = Enumerable.Range(0, LeafCount).Select(_ => leafBinsQuery.ToArray()).ToArray();
+            HashSet<int> apexVertices = new();
+            var leafBinsQuery = Enumerable.Range(0, periodicVerts.Max((pair) => pair.Value) + 1).Select(_ => new HashSet<int>());
+            HashSet<int>[][] leafPeriodicities = Enumerable.Range(0, LeafCount).Select(_ => leafBinsQuery.ToArray()).ToArray();
 
-            List<int> GetGroup(int leaf, int group)
+            HashSet<int> GetGroup(int leaf, int group)
             {
                 if (group < 0)
                 {
@@ -175,7 +175,7 @@ namespace WinHue.LED
             // For each of the periodicity groups pick a candidate member (the minimum index) to replace all the others in the group
             Dictionary<int, int> replacements = new();
             SortedSet<int> removedSet = new();
-            foreach (var group in leafPeriodicities.SelectMany(_ => _))
+            foreach (var group in leafPeriodicities.SelectMany(_ => _).Concat(new[] { apexVertices }))
             {
                 int candidate = group.Min();
                 foreach (int vert in group)
@@ -193,8 +193,9 @@ namespace WinHue.LED
                 var (v1, v2) = struts[i];
                 var p1 = GetUncompressedVertexPosition(v1);
                 var p2 = GetUncompressedVertexPosition(v2);
-                replacements.TryGetValue(v1, out v1);
-                replacements.TryGetValue(v2, out v2);
+                int ind;
+                if (replacements.TryGetValue(v1, out ind)) v1 = ind;
+                if (replacements.TryGetValue(v2, out ind)) v2 = ind;
 
                 // Use BinarySearch to figure out how many vertices with smaller indices have been removed;
                 // Since the remaining vertices can't be in the removed list, BinarySearch will always return

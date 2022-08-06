@@ -2,7 +2,7 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using WinHue.Utilities;
 
-namespace WinHue.Tests
+namespace WinHue.Tests.Utilities
 {
     [TestClass()]
     public class ProjectionTests

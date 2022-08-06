@@ -3,13 +3,13 @@ using WinHue.Framework;
 
 namespace WinHue.LED
 {
-    internal sealed partial class DomeOutput
+    public sealed partial class DomeOutput
     {
         public readonly struct Pixel
         {
             public Pixel(DomeOutput dome, int strut, int led)
             {
-                mParent = dome;
+                mDome = dome;
                 Strut = strut;
                 LED = led;
                 mOpcIndex = GetOpcPixelIndex(Strut, LED);
@@ -21,11 +21,11 @@ namespace WinHue.LED
 
             public readonly Color Color
             {
-                get => mParent.mBatcher.GetPixel(mOpcIndex);
-                set => mParent.mBatcher.SetPixel(mOpcIndex, value);
+                get => mDome.mBatcher.GetPixel(mOpcIndex);
+                set => mDome.mBatcher.SetPixel(mOpcIndex, value);
             }
 
-            private readonly DomeOutput mParent;
+            private readonly DomeOutput mDome;
             private readonly int mOpcIndex;
         }
     }

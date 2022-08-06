@@ -6,11 +6,12 @@ using System.Windows.Threading;
 
 namespace WinHue.Core
 {
-    internal class Runtime
+    internal class RuntimeExecutor
     {
+        public event EventHandler<ProgressEventArgs>? Progress;
         public event EventHandler<Exception> ExceptionRaised;
 
-        public Runtime()
+        public RuntimeExecutor()
         {
             mThread = new Thread(Run) { IsBackground = true };
             mCancellationSource = new();
@@ -18,27 +19,27 @@ namespace WinHue.Core
             mDispatcher = Dispatcher.CurrentDispatcher;
         }
 
+        public void Start()
+        {
+            mThread.Start(new ThreadData(this));
+        }
+
+        public void Stop()
+        {
+            mCancellationSource.Cancel();
+            mThread.Join();
+        }
+
         public double Framerate => mFramerate;
 
         private class ThreadData
         {
-            public ThreadData(Runtime parent)
+            public ThreadData(RuntimeExecutor parent)
             {
                 CancellationToken = parent.mCancellationSource.Token;
             }
 
             public CancellationToken CancellationToken { get; }
-        }
-
-        private void Start()
-        {
-            mThread.Start(new ThreadData(this));
-        }
-
-        private void Stop()
-        {
-            mCancellationSource.Cancel();
-            mThread.Join();
         }
 
         private void Run(object? arg)
@@ -51,6 +52,7 @@ namespace WinHue.Core
                 }
                 var data = (ThreadData)arg;
                 var token = data.CancellationToken;
+                RaiseProgress("Initialized...", 100);
                 var sw = Stopwatch.StartNew();
                 var frameQueue = new Queue<TimeSpan>(1000);
                 frameQueue.Enqueue(sw.Elapsed);
@@ -66,13 +68,23 @@ namespace WinHue.Core
             }
             catch (Exception e)
             {
-                mDispatcher.Invoke(() => ExceptionRaised(this, e));
+                RaiseException(e);
             }
         }
 
         private void OnException(object? sender, Exception e)
         {
             mThread.Join();
+        }
+
+        private void RaiseException(Exception e)
+        {
+            mDispatcher.Invoke(() => ExceptionRaised(this, e));
+        }
+
+        private void RaiseProgress(string message, double progress)
+        {
+            mDispatcher.Invoke(() => Progress?.Invoke(this, new ProgressEventArgs(message, progress)));
         }
 
         private readonly Thread mThread;

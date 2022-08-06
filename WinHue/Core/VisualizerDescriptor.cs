@@ -3,16 +3,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using WinHue.Framework;
-using WinHue.Utilities;
 
 namespace WinHue.Core
 {
-    internal abstract class VisualizerDescriptor
+    internal sealed class VisualizerDescriptor
     {
         public VisualizerDescriptor(Type type)
         {
             ValidateType(type);
-
 
             Dependencies = GetDependencies(type);
             Type = type;
@@ -46,7 +44,7 @@ namespace WinHue.Core
 
             foreach (var param in ctorParams)
             {
-                var elemType = param.ParameterType.GetCollectionElementType().Type;
+                var elemType = param.ParameterType;
                 if (elemType.IsAssignableTo(typeof(IInput))) continue;
                 if (elemType.IsAssignableTo(typeof(IOutput))) continue;
                 throw new ArgumentException($"Constructor parameter {param.ParameterType} {param.Name} must implement IInput or IOutput", exp);

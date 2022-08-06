@@ -1,6 +1,6 @@
 ﻿namespace WinHue.Framework
 {
-    internal interface IOutput
+    public interface IOutput
     {
         /// <summary>
         /// Activates this output.

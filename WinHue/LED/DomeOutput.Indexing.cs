@@ -2,7 +2,7 @@
 
 namespace WinHue.LED
 {
-    internal sealed partial class DomeOutput
+    public sealed partial class DomeOutput
     {
         private static class LEDCount
         {
@@ -25,7 +25,7 @@ namespace WinHue.LED
                 new[]{ Blue, Blue, Blue, Yellow }
             };
 
-            public static readonly int[] ByStrut = ByControlBoxAndStrut.SelectMany(_=>_).ToArray();
+            public static readonly int[] ByStrut = ByControlBoxAndStrut.SelectMany(_ => _).ToArray();
 
             public static readonly int StrandStride = ByControlBoxAndStrut.Select(counts => counts.Sum()).Max();
             public static readonly int ControlBoxStride = ByControlBoxAndStrut.Length * StrandStride;

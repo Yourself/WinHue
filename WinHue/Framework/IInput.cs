@@ -3,7 +3,7 @@
     /// <summary>
     /// Represents an input data source that can be utilized by visualizers.
     /// </summary>
-    internal interface IInput
+    public interface IInput
     {
         /// <summary>
         /// Gets whether this input is always active. If false, requires an active consumer.

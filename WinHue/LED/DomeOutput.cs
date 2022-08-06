@@ -1,10 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using WinHue.Framework;
 
 namespace WinHue.LED
 {
-    internal sealed partial class DomeOutput : IOutput, IDisposable
+    public sealed partial class DomeOutput : IOutput, IDisposable
     {
         public DomeOutput()
         {
@@ -17,20 +18,9 @@ namespace WinHue.LED
         [Configurable]
         public ushort? DebugPort { get; set; }
 
-        public IEnumerable<Pixel> Pixels
-        {
-            get
-            {
-                for (int strut = 0; strut < StrutVertices.Length; ++strut)
-                {
-                    int n = GetStrutLEDCount(strut);
-                    for (int i = 0; i < n; ++i)
-                    {
-                        yield return new Pixel(this, strut, i);
-                    }
-                }
-            }
-        }
+        public IEnumerable<Pixel> Pixels => Struts.SelectMany(strut => strut.Pixels);
+
+        public IEnumerable<Strut> Struts => Enumerable.Range(0, StrutVertices.Length).Select(idx => new Strut(this, idx));
 
         public void SetPixel(int strutIndex, int ledIndex, Color color)
         {

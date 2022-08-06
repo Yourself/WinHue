@@ -5,7 +5,7 @@ namespace WinHue.Framework
     /// <summary>
     /// Represents an 8-bit per channel RGB color.
     /// </summary>
-    internal struct Color
+    public struct Color
     {
         /// <summary>
         /// Computes a color blended between two others by the specified amount.

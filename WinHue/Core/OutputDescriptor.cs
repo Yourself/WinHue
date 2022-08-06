@@ -4,12 +4,17 @@ using WinHue.Framework;
 
 namespace WinHue.Core
 {
-    internal class OutputDescriptor
+    internal sealed class OutputDescriptor
     {
         public OutputDescriptor(Type type)
         {
             ValidateType(type);
             Type = type;
+        }
+
+        public IOutput CreateInstance()
+        {
+            return (IOutput)Activator.CreateInstance(Type)!;
         }
 
         public Type Type { get; }

@@ -3,7 +3,7 @@
 namespace WinHue.Framework
 {
     [AttributeUsage(AttributeTargets.Property)]
-    internal sealed class ConfigurableAttribute : Attribute
+    public sealed class ConfigurableAttribute : Attribute
     {
     }
 }
