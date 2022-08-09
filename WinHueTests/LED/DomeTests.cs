@@ -44,9 +44,6 @@ namespace WinHue.Tests.LED
             {
                 Assert.That.AreClose(vertex.Position.Length(), 1.0f);
             }
-
-            string s = string.Join(", ", vertices.Select(v => v.Position).Select(p => $"{{{p.X}, {p.Y}, {p.Z}}}"));
-            Assert.IsTrue(s.Length > 0);
         }
     }
 }
